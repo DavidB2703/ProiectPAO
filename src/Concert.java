@@ -30,4 +30,12 @@ public class Concert extends Eveniment{
         artisti.add(this.artist);
         return artisti;
     }
+
+    public String getOra() {
+        return ora;
+    }
+
+    public Artist getArtist() {
+        return artist;
+    }
 }

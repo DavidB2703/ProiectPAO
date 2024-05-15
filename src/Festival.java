@@ -35,4 +35,14 @@ public class Festival extends Eveniment{
         return this.artisti;
     }
 
+    public int getNumarZile() {
+        return nrZile;
+    }
+
+    public int getPretBiletOZi() {
+        return pretBiletOZi;
+    }
+
+
+
 }

@@ -27,4 +27,12 @@ public class Petrecere extends Eveniment{
         return artisti;
     }
 
+    public String getOraIncepere() {
+        return oraIncepere;
+    }
+
+    public String getDj() {
+        return Dj;
+    }
+
 }

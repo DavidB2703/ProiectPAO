@@ -1,10 +1,12 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 
-public class Main {
-    public static void main(String[] args) {
+import static java.lang.Thread.sleep;
 
-        new HomePage();
-        //creare Artisti
+public class Main {
+
+    private static void creareArtistisiFestivale(){
         Artist artist1 = new Artist("Vama", GenMuzical.ROCK, 20);
         Artist artist2 = new Artist("5Gang", GenMuzical.POP, 20);
         Artist artist3 = new Artist("3SudEst", GenMuzical.POP, 20);
@@ -44,6 +46,16 @@ public class Main {
         ArtistiBeachPlease.add(artist14);
         ArtistiBeachPlease.add(artist15);
 
+        //adaugare in baza de date
+
+        //DbManager.makeDbUnpopulated();
+
+//        DbManager.addArtists(ArtistiUndold);
+//        DbManager.addArtists(ArtistiElectricCastle);
+//        DbManager.addArtists(ArtistiSummerWell);
+//        DbManager.addArtists(ArtistiNeversea);
+//        DbManager.addArtists(ArtistiBeachPlease);
+
         //creare festivaluri
         Festival eveniment = new Festival("Undold", "Cluj", "03.08.2021", 50, ArtistiUndold);
         Festival eveniment1 = new Festival("Electric Castle", "Cluj", "03.08.2021", 100, ArtistiElectricCastle);
@@ -82,7 +94,16 @@ public class Main {
         evenimente.add(eveniment14);
         evenimente.add(eveniment15);
 
+        //adaugare in baza de date
+        //DbManager.addEvents(evenimente);
+        //PageService.setEvenimente(evenimente);
 
-        PageService.setEvenimente(evenimente);
+        //DbManager.makeDbPopulated();
+
+    }
+    public static void main(String[] args) {
+
+        new HomePage();
+        creareArtistisiFestivale();
     }
 }

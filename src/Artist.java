@@ -16,4 +16,16 @@ public class Artist {
                 "Gen muzical: " + genMuzical + "\n" +
                 "Varsta: " + varsta + "\n";
     }
+
+    public String getNume() {
+        return nume;
+    }
+
+    public GenMuzical getGenMuzical() {
+        return genMuzical;
+    }
+
+    public int getVarsta() {
+        return varsta;
+    }
 }

@@ -29,4 +29,12 @@ public class FanMeeting extends Eveniment{
         artisti.add(this.artist);
         return artisti;
     }
+
+    public String getDurata() {
+        return durata;
+    }
+
+    public Artist getArtist() {
+        return artist;
+    }
 }

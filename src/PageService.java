@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 public class PageService {
-    private static ArrayList<Eveniment> evenimente = new ArrayList<>();
     protected static final CardLayout cardLayout = new CardLayout();
     protected static final JPanel cardPanel = new JPanel(cardLayout);
     private static ArrayList<Eveniment> anumiteEvenimente = new ArrayList<>();
@@ -10,18 +9,27 @@ public class PageService {
     public static void set_homePannel(JPanel homePannel) {
         PageService.homePannel = homePannel;
     }
-    public static void setEvenimente(ArrayList<Eveniment> evenimente) {
-        PageService.evenimente = evenimente;
-    }
 
+   private DbManager db = DbManager.getInstance();
 
     private void selectEvents(TipEveniment tip) {
         anumiteEvenimente.clear();
-        for (Eveniment eveniment : evenimente) {
-            if (eveniment.getTip().equals(tip)) {
-                anumiteEvenimente.add(eveniment);
-            }
-        }
+        //luam doar evenimentele de tipul tip din baza de date
+        anumiteEvenimente = db.getEvenimente(tip);
+    }
+
+    private JButton deleteButton(){
+        JButton deleteButton = new JButton("Delete");
+        deleteButton.setFont(deleteButton.getFont().deriveFont(20.0f));
+        deleteButton.setPreferredSize(new Dimension(200, 80));
+        return deleteButton;
+    }
+
+    private JButton UpdateButton(){
+        JButton backButton = new JButton("Update");
+        backButton.setFont(backButton.getFont().deriveFont(20.0f));
+        backButton.setPreferredSize(new Dimension(200, 80));
+        return backButton;
     }
     private JButton backButton(){
         JButton backButton = new JButton("Back");
@@ -43,7 +51,15 @@ public class PageService {
         return showArtistButton;
     }
 
+    private JButton showNewButton(){
+        JButton showNewButton = new JButton("New");
+        showNewButton.setFont(showNewButton.getFont().deriveFont(20.0f));
+        showNewButton.setPreferredSize(new Dimension(200, 80));
+        return showNewButton;
+    }
+
     private void displaySingleEvent(Eveniment eveniment){
+
         JTextArea textArea = new JTextArea(eveniment.afisareEveniment());
         textArea.setFont(textArea.getFont().deriveFont(30.0f));
         textArea.setWrapStyleWord(true); // set word wrap
@@ -63,6 +79,131 @@ public class PageService {
         panel.add(textPanel); // Add the textPanel instead of the JTextArea
         JButton backButton = backButton();
         panel.add(backButton);
+        JButton updateButton = UpdateButton();
+        panel.add(updateButton);
+        JButton deleleButton = deleteButton();
+        panel.add(deleleButton);
+
+        updateButton.addActionListener(e -> {
+            //deschidem un dialog pentru a citi datele
+            JTextField nume = new JTextField();
+            JTextField locatie = new JTextField();
+            JTextField data = new JTextField();
+            JTextField pretBilet = new JTextField();
+            if (eveniment.getTip() == TipEveniment.CONCERT) {
+                JTextField ora = new JTextField();
+                JTextField artist = new JTextField();
+                JPanel myPanel = new JPanel();
+                myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
+                myPanel.add(new JLabel("Nume:"));
+                myPanel.add(nume);
+                myPanel.add(new JLabel("Locatie:"));
+                myPanel.add(locatie);
+                myPanel.add(new JLabel("Data:"));
+                myPanel.add(data);
+                myPanel.add(new JLabel("Pret Bilet:"));
+                myPanel.add(pretBilet);
+                myPanel.add(new JLabel("Ora:"));
+                myPanel.add(ora);
+                myPanel.add(new JLabel("Artist:"));
+                myPanel.add(artist);
+                int result = JOptionPane.showConfirmDialog(null, myPanel,
+                        "Please Enter the Event", JOptionPane.OK_CANCEL_OPTION);
+                //cautam artistul in baza de date
+                Artist artist1 = db.getArtistByName(artist.getText());
+                if (result == JOptionPane.OK_OPTION) {
+                    Concert concertToEdit = (Concert) eveniment;
+                    int id = db.getConcertID((concertToEdit));
+                    //adaugam in baza de date
+                    Concert concert = new Concert(nume.getText(), locatie.getText(), data.getText(), Integer.parseInt(pretBilet.getText()), artist1, ora.getText());
+                    ConcertRepository concertRepository = new ConcertRepository();
+                    concertRepository.updateConcert(concert, id);
+                }
+            } else if (eveniment.getTip() == TipEveniment.FAN_MEETING) {
+                JTextField durata = new JTextField();
+                JTextField artist = new JTextField();
+                JPanel myPanel = new JPanel();
+                myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
+                myPanel.add(new JLabel("Nume:"));
+                myPanel.add(nume);
+                myPanel.add(new JLabel("Locatie:"));
+                myPanel.add(locatie);
+                myPanel.add(new JLabel("Data:"));
+                myPanel.add(data);
+                myPanel.add(new JLabel("Pret Bilet:"));
+                myPanel.add(pretBilet);
+                myPanel.add(new JLabel("Durata:"));
+                myPanel.add(durata);
+                myPanel.add(new JLabel("Artist:"));
+                myPanel.add(artist);
+                int result = JOptionPane.showConfirmDialog(null, myPanel,
+                        "Please Enter the Event", JOptionPane.OK_CANCEL_OPTION);
+                //cautam artistul in baza de date
+                Artist artist1 = db.getArtistByName(artist.getText());
+                if (result == JOptionPane.OK_OPTION) {
+                    FanMeeting fanMeetingToEdit = (FanMeeting) eveniment;
+                    int id = db.getFanMeetingID(fanMeetingToEdit);
+                    //adaugam in baza de date
+                    FanMeeting fanMeeting = new FanMeeting(nume.getText(), locatie.getText(), data.getText(), Integer.parseInt(pretBilet.getText()), artist1, durata.getText());
+                    FanMeetingRepository fanMeetingRepository = new FanMeetingRepository();
+                    fanMeetingRepository.updateFanMeeting(fanMeeting, id);
+                }
+            }
+            else if (eveniment.getTip() == TipEveniment.PETRECERE){
+                //e petrecere
+                System.out.println("Petrecere");
+                JTextField OraIncepere = new JTextField();
+                JTextField Dj = new JTextField();
+                JPanel myPanel = new JPanel();
+                myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
+                myPanel.add(new JLabel("Nume:"));
+                myPanel.add(nume);
+                myPanel.add(new JLabel("Locatie:"));
+                myPanel.add(locatie);
+                myPanel.add(new JLabel("Data:"));
+                myPanel.add(data);
+                myPanel.add(new JLabel("Pret Bilet:"));
+                myPanel.add(pretBilet);
+                myPanel.add(new JLabel("Ora Incepere:"));
+                myPanel.add(OraIncepere);
+                myPanel.add(new JLabel("Dj:"));
+                myPanel.add(Dj);
+                System.out.println("Dj");
+                int result = JOptionPane.showConfirmDialog(null, myPanel,
+                        "Please Enter the Event", JOptionPane.OK_CANCEL_OPTION);
+                if(result == JOptionPane.OK_OPTION) {
+
+                    Petrecere petrecere = (Petrecere) eveniment;
+                    int id = db.getPetrecereID(petrecere);
+                    Petrecere petrecereNoua = new Petrecere(nume.getText(), locatie.getText(), data.getText(), Integer.parseInt(pretBilet.getText()), OraIncepere.getText(), Dj.getText());
+                    PetrecereRepository petrecereRepository = new PetrecereRepository();
+                    petrecereRepository.updatePetrecere(petrecereNoua, id);
+                }
+            }
+
+        });
+
+        deleleButton.addActionListener(e -> {
+            //stergem evenimentul
+            //stergem evenimentul in functie de tip
+            if(eveniment.getTip() == TipEveniment.CONCERT){
+                Concert concert = (Concert) eveniment;
+                ConcertRepository concertRepository = new ConcertRepository();
+                concertRepository.deleteConcert(concert);
+            }
+            else if(eveniment.getTip() == TipEveniment.FAN_MEETING){
+                FanMeeting fanMeeting = (FanMeeting) eveniment;
+                FanMeetingRepository fanMeetingRepository = new FanMeetingRepository();
+                fanMeetingRepository.deleteFanMeeting(fanMeeting);
+            }
+            else{
+                Petrecere petrecere = (Petrecere) eveniment;
+                PetrecereRepository petrecereRepository = new PetrecereRepository();
+                petrecereRepository.deletePetrecere(petrecere);
+            }
+            cardLayout.show(cardPanel, eveniment.getTip().toString());
+        });
+
         backButton.addActionListener(e -> cardLayout.show(cardPanel, eveniment.getTip().toString()));
         cardPanel.add(panel, "singleEvent");
         cardLayout.show(cardPanel, "singleEvent");
@@ -95,6 +236,10 @@ public class PageService {
         }
     }
 
+    private void tabConcert(){
+
+    }
+
     public void displayEventsPage(TipEveniment tip) {
 
         JPanel panel = new JPanel();
@@ -120,6 +265,115 @@ public class PageService {
             newPanel.add(sortButton, BorderLayout.NORTH);
             cardPanel.add(newPanel, tip.toString());
             cardLayout.show(cardPanel, tip.toString());
+        });
+        JButton showNewButton = showNewButton();
+        panel.add(showNewButton);
+        showNewButton.addActionListener(e -> {
+            // citim din aplicatie un nou eveniment de tipul respectiv
+            // si il adaugam in baza de date
+            // apoi il afisam
+            //deschidem un dialog pentru a citi datele
+            JTextField nume = new JTextField();
+            JTextField locatie = new JTextField();
+            JTextField data = new JTextField();
+            JTextField pretBilet = new JTextField();
+            if (tip == TipEveniment.CONCERT) {
+                JTextField ora = new JTextField();
+                JTextField artist = new JTextField();
+                JPanel myPanel = new JPanel();
+                myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
+                myPanel.add(new JLabel("Nume:"));
+                myPanel.add(nume);
+                myPanel.add(new JLabel("Locatie:"));
+                myPanel.add(locatie);
+                myPanel.add(new JLabel("Data:"));
+                myPanel.add(data);
+                myPanel.add(new JLabel("Pret Bilet:"));
+                myPanel.add(pretBilet);
+                myPanel.add(new JLabel("Ora:"));
+                myPanel.add(ora);
+                myPanel.add(new JLabel("Artist:"));
+                myPanel.add(artist);
+                int result = JOptionPane.showConfirmDialog(null, myPanel,
+                        "Please Enter the Event", JOptionPane.OK_CANCEL_OPTION);
+                //cautam artistul in baza de date
+                Artist artist1 = db.getArtistByName(artist.getText());
+                if (result == JOptionPane.OK_OPTION) {
+                    //adaugam in baza de date
+                    Concert concert = new Concert(nume.getText(), locatie.getText(), data.getText(), Integer.parseInt(pretBilet.getText()), artist1, ora.getText());
+                    ConcertRepository concertRepository = new ConcertRepository();
+                    concertRepository.addConcert(concert);
+                }
+            } else if (tip == TipEveniment.FAN_MEETING) {
+                JTextField durata = new JTextField();
+                JTextField artist = new JTextField();
+                JPanel myPanel = new JPanel();
+                myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
+                myPanel.add(new JLabel("Nume:"));
+                myPanel.add(nume);
+                myPanel.add(new JLabel("Locatie:"));
+                myPanel.add(locatie);
+                myPanel.add(new JLabel("Data:"));
+                myPanel.add(data);
+                myPanel.add(new JLabel("Pret Bilet:"));
+                myPanel.add(pretBilet);
+                myPanel.add(new JLabel("Durata:"));
+                myPanel.add(durata);
+                myPanel.add(new JLabel("Artist:"));
+                myPanel.add(artist);
+                int result = JOptionPane.showConfirmDialog(null, myPanel,
+                        "Please Enter the Event", JOptionPane.OK_CANCEL_OPTION);
+                //cautam artistul in baza de date
+                Artist artist1 = db.getArtistByName(artist.getText());
+                if (result == JOptionPane.OK_OPTION) {
+                    //adaugam in baza de date
+                    FanMeeting fanMeeting = new FanMeeting(nume.getText(), locatie.getText(), data.getText(), Integer.parseInt(pretBilet.getText()), artist1, durata.getText());
+                    FanMeetingRepository fanMeetingRepository = new FanMeetingRepository();
+                    fanMeetingRepository.addFanMeeting(fanMeeting);
+                }
+            } else if (tip == TipEveniment.FESTIVAL) {
+                JTextField artist = new JTextField();
+                JPanel myPanel = new JPanel();
+                myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
+                myPanel.add(new JLabel("Nume:"));
+                myPanel.add(nume);
+                myPanel.add(new JLabel("Locatie:"));
+                myPanel.add(locatie);
+                myPanel.add(new JLabel("Data:"));
+                myPanel.add(data);
+                myPanel.add(new JLabel("Pret Bilet:"));
+                myPanel.add(pretBilet);
+                myPanel.add(new JLabel("Artist:"));
+                myPanel.add(artist);
+                int result = JOptionPane.showConfirmDialog(null, myPanel,
+                        "Please Enter the Event", JOptionPane.OK_CANCEL_OPTION);
+            }
+            else if (tip == TipEveniment.PETRECERE){
+                //e petrecere
+                System.out.println("Petrecere");
+                JTextField OraIncepere = new JTextField();
+                JTextField Dj = new JTextField();
+                JPanel myPanel = new JPanel();
+                myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
+                myPanel.add(new JLabel("Nume:"));
+                myPanel.add(nume);
+                myPanel.add(new JLabel("Locatie:"));
+                myPanel.add(locatie);
+                myPanel.add(new JLabel("Data:"));
+                myPanel.add(data);
+                myPanel.add(new JLabel("Pret Bilet:"));
+                myPanel.add(pretBilet);
+                myPanel.add(new JLabel("Ora Incepere:"));
+                myPanel.add(OraIncepere);
+                myPanel.add(new JLabel("Dj:"));
+                myPanel.add(Dj);
+                System.out.println("Dj");
+                int result = JOptionPane.showConfirmDialog(null, myPanel,
+                        "Please Enter the Event", JOptionPane.OK_CANCEL_OPTION);
+                Petrecere petrecereNoua = new Petrecere(nume.getText(), locatie.getText(), data.getText(), Integer.parseInt(pretBilet.getText()), OraIncepere.getText(), Dj.getText());
+                PetrecereRepository petrecereRepository = new PetrecereRepository();
+                petrecereRepository.writePetrecere(petrecereNoua);
+            }
         });
 
 
