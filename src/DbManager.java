@@ -20,6 +20,34 @@ public class DbManager {
         return instance;
     }
 
+    public static ArrayList<Artist> getAllArtists(){
+        ArrayList<Artist> artisti = new ArrayList<>();
+        Connection con = null;
+        try {
+            con = DriverManager.getConnection(url, username, password);
+            String sql = "SELECT * FROM ARTIST";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Artist artist = new Artist(rs.getString("NAME"), GenMuzical.valueOf(rs.getString("GENMUZICAL")), rs.getInt("VARSTA"));
+                artisti.add(artist);
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to get artists");
+            e.printStackTrace();
+        } finally {
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return artisti;
+
+    }
+
     public ArrayList<Eveniment> getEvenimente(TipEveniment tip){
         ArrayList<Eveniment> evenimente = new ArrayList<>();
         Connection con = null;
@@ -108,12 +136,14 @@ public class DbManager {
         }
     }
 
-    public void read(String query) {
+    public String read(String query) {
+        String result = "";
         try {
             Connection con = DriverManager.getConnection(url, username, password);
             PreparedStatement stmt = con.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
+                result += rs.getString(1) + " " + rs.getString(2) + " " + rs.getString(3) + "\n";
                 // afiseaza tot rezultatul query-ului, oricat de mare ar fi
                 System.out.println(rs.getString(1) + " " + rs.getString(2) + " " + rs.getString(3));
 
@@ -123,6 +153,7 @@ public class DbManager {
             System.out.println("Failed to read from the database");
             e.printStackTrace();
         }
+        return result;
     }
 
     public static int getFanMeetingID(FanMeeting fanMeeting) {

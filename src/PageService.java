@@ -86,6 +86,7 @@ public class PageService {
 
         updateButton.addActionListener(e -> {
             //deschidem un dialog pentru a citi datele
+            AuditService.logAction("Incercare Update event");
             JTextField nume = new JTextField();
             JTextField locatie = new JTextField();
             JTextField data = new JTextField();
@@ -118,6 +119,8 @@ public class PageService {
                     Concert concert = new Concert(nume.getText(), locatie.getText(), data.getText(), Integer.parseInt(pretBilet.getText()), artist1, ora.getText());
                     ConcertRepository concertRepository = new ConcertRepository();
                     concertRepository.updateConcert(concert, id);
+                    AuditService.logAction("Concert editat cu succes");
+
                 }
             } else if (eveniment.getTip() == TipEveniment.FAN_MEETING) {
                 JTextField durata = new JTextField();
@@ -147,6 +150,7 @@ public class PageService {
                     FanMeeting fanMeeting = new FanMeeting(nume.getText(), locatie.getText(), data.getText(), Integer.parseInt(pretBilet.getText()), artist1, durata.getText());
                     FanMeetingRepository fanMeetingRepository = new FanMeetingRepository();
                     fanMeetingRepository.updateFanMeeting(fanMeeting, id);
+                    AuditService.logAction("FanMeeting editat cu succes");
                 }
             }
             else if (eveniment.getTip() == TipEveniment.PETRECERE){
@@ -178,6 +182,7 @@ public class PageService {
                     Petrecere petrecereNoua = new Petrecere(nume.getText(), locatie.getText(), data.getText(), Integer.parseInt(pretBilet.getText()), OraIncepere.getText(), Dj.getText());
                     PetrecereRepository petrecereRepository = new PetrecereRepository();
                     petrecereRepository.updatePetrecere(petrecereNoua, id);
+                    AuditService.logAction("Petrecere editata cu succes");
                 }
             }
 
@@ -190,21 +195,24 @@ public class PageService {
                 Concert concert = (Concert) eveniment;
                 ConcertRepository concertRepository = new ConcertRepository();
                 concertRepository.deleteConcert(concert);
+                AuditService.logAction("Stergere concert");
             }
             else if(eveniment.getTip() == TipEveniment.FAN_MEETING){
                 FanMeeting fanMeeting = (FanMeeting) eveniment;
                 FanMeetingRepository fanMeetingRepository = new FanMeetingRepository();
                 fanMeetingRepository.deleteFanMeeting(fanMeeting);
+                AuditService.logAction("Stergere fan meeting");
             }
             else{
                 Petrecere petrecere = (Petrecere) eveniment;
                 PetrecereRepository petrecereRepository = new PetrecereRepository();
                 petrecereRepository.deletePetrecere(petrecere);
+                AuditService.logAction("Stergere petrecere");
             }
             cardLayout.show(cardPanel, eveniment.getTip().toString());
         });
 
-        backButton.addActionListener(e -> cardLayout.show(cardPanel, eveniment.getTip().toString()));
+        backButton.addActionListener(e -> {cardLayout.show(cardPanel, eveniment.getTip().toString()); AuditService.logAction("Back to events");});
         cardPanel.add(panel, "singleEvent");
         cardLayout.show(cardPanel, "singleEvent");
 
@@ -236,12 +244,9 @@ public class PageService {
         }
     }
 
-    private void tabConcert(){
-
-    }
-
     public void displayEventsPage(TipEveniment tip) {
 
+        AuditService.logAction("Afisare evenimente");
         JPanel panel = new JPanel();
         cardPanel.add(panel, tip.toString());
         selectEvents(tip);
@@ -249,7 +254,7 @@ public class PageService {
         JButton backButton = backButton();
         panel.add(backButton, BorderLayout.SOUTH);
         backButton.addActionListener(
-                e -> cardLayout.show(cardPanel, "home"));
+                e -> {cardLayout.show(cardPanel, "home");AuditService.logAction("Back to home");});
         cardLayout.show(cardPanel, tip.toString()
         );
         //mai adaugam un buton de sort
@@ -265,6 +270,7 @@ public class PageService {
             newPanel.add(sortButton, BorderLayout.NORTH);
             cardPanel.add(newPanel, tip.toString());
             cardLayout.show(cardPanel, tip.toString());
+            AuditService.logAction("Sortare dupa pret");
         });
         JButton showNewButton = showNewButton();
         panel.add(showNewButton);
@@ -273,6 +279,7 @@ public class PageService {
             // si il adaugam in baza de date
             // apoi il afisam
             //deschidem un dialog pentru a citi datele
+            AuditService.logAction("Incercare adaugare eveniment");
             JTextField nume = new JTextField();
             JTextField locatie = new JTextField();
             JTextField data = new JTextField();
@@ -303,6 +310,7 @@ public class PageService {
                     Concert concert = new Concert(nume.getText(), locatie.getText(), data.getText(), Integer.parseInt(pretBilet.getText()), artist1, ora.getText());
                     ConcertRepository concertRepository = new ConcertRepository();
                     concertRepository.addConcert(concert);
+                    AuditService.logAction("Concert adaugat cu succes");
                 }
             } else if (tip == TipEveniment.FAN_MEETING) {
                 JTextField durata = new JTextField();
@@ -330,6 +338,7 @@ public class PageService {
                     FanMeeting fanMeeting = new FanMeeting(nume.getText(), locatie.getText(), data.getText(), Integer.parseInt(pretBilet.getText()), artist1, durata.getText());
                     FanMeetingRepository fanMeetingRepository = new FanMeetingRepository();
                     fanMeetingRepository.addFanMeeting(fanMeeting);
+                    AuditService.logAction("FanMeeting adaugat cu succes");
                 }
             } else if (tip == TipEveniment.FESTIVAL) {
                 JTextField artist = new JTextField();
@@ -373,6 +382,7 @@ public class PageService {
                 Petrecere petrecereNoua = new Petrecere(nume.getText(), locatie.getText(), data.getText(), Integer.parseInt(pretBilet.getText()), OraIncepere.getText(), Dj.getText());
                 PetrecereRepository petrecereRepository = new PetrecereRepository();
                 petrecereRepository.writePetrecere(petrecereNoua);
+                AuditService.logAction("Petrecere adaugata cu succes");
             }
         });
 

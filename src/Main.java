@@ -105,5 +105,6 @@ public class Main {
 
         new HomePage();
         creareArtistisiFestivale();
+        AuditService.logAction("Main started");
     }
 }

@@ -9,10 +9,11 @@ public class ArtistRepository {
         dbManager.write(query);
     }
 
-    public void readArtists(Artist artist) {
+    public String readArtists(Artist artist) {
         int id = DbManager.getArtistID(artist);
         String query = "SELECT * FROM ARTIST WHERE ID = " + id + ";";
-        dbManager.read(query);
+        String result = dbManager.read(query);
+        return result;
     }
 
     public void deleteArtist(Artist artist) {
